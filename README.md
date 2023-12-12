@@ -6,7 +6,7 @@ The goal of this pipeline is to provide users a quick, easy way to run through F
 
 2. Summarize the processed data
 
-The details of these steps can be found in the following sections. In short, all the user needs to do to run the pipeline is to edit the configuration files ("*.config.txt") and then run:
+For each step, the pipeline has a configuration file (\*.config.txt) the user needs to edit and is run with the Bash script (\*.sh) in the Terminal, which the user does *not* need to edit. The details of these steps can be found in the following sections. In short, running the pipeline looks like:
 
 ```sh
 # Step 1
@@ -14,6 +14,8 @@ The details of these steps can be found in the following sections. In short, all
 # Step 2
 ./MBpipeline_02_processed2summary.sh MBpipeline_02_config.txt
 ```
+
+
 
 ### Installation
 
@@ -25,6 +27,24 @@ cd metabarcoding-pipeline
 conda env create -f environment.yml
 ```
 
+### Step 1) Process the raw data
+
+To run the first step of the pipeline some preparation of files and directories is necessary.
+
+First, the raw \*.fastq files **must be in a directory called "01_raw"** AND that directory needs to be in the same directory as the metabarcoding-pipeline scripts.
+
+The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The configuration file is set up such that there is a multi-line header delineated by rows beginning with "#", followed by rows providing different parameters. Each parameter is on its own row and the name to the left of the "=" is *not to be edited* while the value to the right of the "=" is what should be edited. The parameters in this step are the following:
+
+**conda** = 
+**R1_file** = 
+**illumina_clip** = 
+**CROP** = 
+**SLIDINGWINDOW** = 
+**MINLEN** = 
+**a** = 
+**g** = 
+
+### Step 2) Summarize the processed data
 
 
 
