@@ -1,6 +1,6 @@
 # This is the configuration file for the second part of the metabarcoding pipeline
 # Parameters to be changed are after the equals sign, do not change anything on the line before it
-conda=snake-metabarcode
+conda=MBpipeline
 processed_file=./02_processed/05_uniques/uniques-reads.txt
 cluster_id=0.97
 db=./data/MIDORI2_UNIQ_NUC_GB255_srRNA_BLAST.fasta.gz
