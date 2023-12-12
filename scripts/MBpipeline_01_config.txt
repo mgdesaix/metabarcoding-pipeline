@@ -1,0 +1,10 @@
+# This is the configuration file for the first part of the metabarcoding pipeline
+# Parameters to be changed are after the equals sign, do not change anything on the line before it
+conda=snake-metabarcode
+R1_file=./data/fish-raw-R1.txt
+illumina_clip=./data/metabar-PE.fa
+CROP=250
+SLIDINGWINDOW=4:15
+MINLEN=75
+a=-a TTAGATACCCCACTATGC -a GTAYACTTACCATGTTACGACTT
+g=-g TAGAACAGGCTCCTCTAG -g ACACCGCCCGTCACCCT
