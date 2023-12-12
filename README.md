@@ -19,7 +19,7 @@ For each step, the pipeline has a configuration file (\*.config.txt) the user ne
 
 ### Installation
 
-The pipeline uses the software `trimmomatic` and `vsearch` for processing the metabarcoding data, as well as `R` for the final tidying of the data summaries. For ease of execution, the user can use the YAML file (environment.yml) provided here to install these dependencies in a [Mamba](https://mamba.readthedocs.io/en/latest/index.html)/[Conda](https://docs.conda.io/projects/conda/en/stable/) environment which will be called when the pipeline is run:
+The pipeline uses the software `trimmomatic`, `cutadapt`, and `vsearch` for processing the metabarcoding data, as well as `R` for the final tidying of the data summaries. For ease of execution, the user can use the YAML file (environment.yml) provided here to install these dependencies in a [Mamba](https://mamba.readthedocs.io/en/latest/index.html)/[Conda](https://docs.conda.io/projects/conda/en/stable/) environment which will be called when the pipeline is run:
 
 ```sh
 git clone https://github.com/mgdesaix/metabarcoding-pipeline.git
@@ -33,25 +33,40 @@ To run the first step of the pipeline some preparation of files and directories 
 
 First, the raw \*.fastq files **must be in a directory called "01_raw"** AND that directory needs to be in the same directory as the metabarcoding-pipeline scripts.
 
-The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The configuration file is set up such that there is a multi-line header delineated by rows beginning with "#", followed by rows providing different parameters. Each parameter is on its own row and the name to the left of the "=" is *not to be edited* while the value to the right of the "=" is what should be edited. The parameters in this step are the following:
+The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The configuration file is set up such that there is a multi-line header delineated by rows beginning with "#", followed by rows providing different parameters. Each parameter is on its own row and the name to the left of the "=" is *not to be edited* while the value to the right of the "=" is what should be edited. The definitions of the parameters for this step are provided below:
 
-**conda** = 
+**conda** = The conda environment that has all necessary applications. If this was set up using the \*.yml file then it is "MBpipeline"
 
-**R1_file** = 
+**R1_file** = A text file that provides the filename of all the raw read 1 files to be processed (which are located in the 01_raw directory, along with their read 2 complement). 
 
-**illumina_clip** = 
+**illumina_clip** = The corresponding file for the `ILLUMINACLIP:` parameter from `trimmomatic`.
 
-**CROP** = 
+**CROP** = The `CROP:` parameter from `trimmomatic`.
 
-**SLIDINGWINDOW** = 
+**SLIDINGWINDOW** = The `SLIDINGWINDOW:` parameter from `trimmomatic`.
 
-**MINLEN** = 
+**MINLEN** = The `MINLEN:` parameter from `trimmomatic`.
 
-**a** = 
+**a** = The `a` parameter from `cutadapt`.
 
-**g** = 
+**g** = The `g` parameter from `cutadapt`.
+
 
 ### Step 2) Summarize the processed data
+
+
+
+**conda** = The conda environment that has all necessary applications. If this was set up using the \*.yml file then it is "MBpipeline"
+
+**processed_file** = The final processed reads produced from Step 1. By default, these files are saved in Step 1 as "./02_processed/05_uniques/uniques-reads.txt".
+
+**cluster_id** = `-id` parameter value from `vsearch` for clustering OTUs, default is set at 0.97.
+
+**db** = Database file specified by `-db` parameter from `vsearch`.
+
+**id_similarity** = `-id` parameter value from `vsearch` for blast
+
+**sintax_db** = Database file from `-db` parameter from `vsearch`'s sintax specification.
 
 
 
