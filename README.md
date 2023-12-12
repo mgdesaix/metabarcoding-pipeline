@@ -36,12 +36,19 @@ First, the raw \*.fastq files **must be in a directory called "01_raw"** AND tha
 The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The configuration file is set up such that there is a multi-line header delineated by rows beginning with "#", followed by rows providing different parameters. Each parameter is on its own row and the name to the left of the "=" is *not to be edited* while the value to the right of the "=" is what should be edited. The parameters in this step are the following:
 
 **conda** = 
+
 **R1_file** = 
+
 **illumina_clip** = 
+
 **CROP** = 
+
 **SLIDINGWINDOW** = 
+
 **MINLEN** = 
+
 **a** = 
+
 **g** = 
 
 ### Step 2) Summarize the processed data
