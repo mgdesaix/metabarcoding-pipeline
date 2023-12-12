@@ -8,3 +8,4 @@ dependencies:
     - cutadapt
     - trimmomatic
     - r-base
+    - r-tidyverse
