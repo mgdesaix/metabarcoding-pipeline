@@ -15,6 +15,8 @@ For each step, the pipeline has a configuration file (\*.config.txt) the user ne
 ./MBpipeline_02_processed2summary.sh MBpipeline_02_config.txt
 ```
 
+*Note:* If you get a warning about files not being executable, remember to use `chmod +x "filename"` to make files executable.
+
 ### Installation
 
 The pipeline uses the software `trimmomatic`, `cutadapt`, and `vsearch` for processing the metabarcoding data, as well as `R` for the final tidying of the data summaries. For ease of execution, the user can use the YAML file (environment.yml) provided here to install these dependencies in a [Mamba](https://mamba.readthedocs.io/en/latest/index.html)/[Conda](https://docs.conda.io/projects/conda/en/stable/) environment which will be called when the pipeline is run:
@@ -24,8 +26,6 @@ git clone https://github.com/mgdesaix/metabarcoding-pipeline.git
 cd metabarcoding-pipeline
 conda env create -f environment.yml
 ```
-
-*Note:* If you get a warning about files not being executable, remember to use `chmod +x "filename"` to make files executable.
 
 ### Step 1) Process the raw data
 
