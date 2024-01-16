@@ -19,12 +19,14 @@ blast_sp <- blast %>%
             .groups = "drop") %>%
   filter(Depth > 5) %>%
   arrange(Sample, desc(Depth))
-write_csv(x = blast_sp,
-          file = "blast_species_summary.txt")
+write_delim(x = blast_sp,
+          file = "blast_species_summary.txt",
+           delim="\t")
 
 blast_sample_depth <- blast %>%
   group_by(Sample) %>%
   summarize(Depth = sum(Depth),
             .groups = "drop")
-write_csv(x = blast_sample_depth,
-          file = "blast_sample_depth.txt")
+write_delim(x = blast_sample_depth,
+          file = "blast_sample_depth.txt",
+           delim="\t")
