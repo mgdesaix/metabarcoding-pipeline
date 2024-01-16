@@ -113,9 +113,6 @@ do
 done
 
 
-Rscript ${blast_summary}
-
-
 
 
 
