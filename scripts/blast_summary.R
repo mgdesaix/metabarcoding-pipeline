@@ -7,7 +7,7 @@ if (length(args)!=1) {
 }
 
 blast <- read_table(args[1],
-                    col_names = c("Sample", "OTU", "Depth", "something",
+                    col_names = c("Sample", "OTU", "Depth", "GenBank_ID",
                                   "Kingdom", "Phylum", "Class", "Order", "Family",
                                   "Genus", "Species", "Match"),
                     show_col_types = F)
@@ -23,7 +23,7 @@ blast_sp <- blast %>%
   arrange(Sample, desc(Depth_sum)) %>%
   pivot_wider(names_from = Sample, values_from = Depth_sum)
 write_delim(x = blast_sp,
-          file = "blast_species_summary.txt",
+          file = "blast_species_contingency_table.txt",
            delim="\t")
 
 blast_sample_depth <- blast %>%
@@ -33,3 +33,26 @@ blast_sample_depth <- blast %>%
 write_delim(x = blast_sample_depth,
           file = "blast_sample_depth.txt",
            delim="\t")
+
+
+otus <- read_table("./full-sample-otus.txt",
+                   col_names = c("Data", "Sample")) %>%
+  mutate("Name" = rep(c("OTU", "Sequence"), length.out = n()))
+
+otus_wide <- cbind((otus %>%
+                      filter(Name == "OTU") %>%
+                      select(Sample, Data) %>%
+                      rename("OTU" = "Data")),
+                   (otus %>%
+                      filter(Name == "Sequence") %>%
+                      select(Data) %>%
+                      rename("Sequence" = "Data"))) %>%
+  tibble()
+
+blast_otus <- blast %>%
+  left_join(otus_wide, by = c("Sample", "OTU"))
+
+write_delim(x = blast_otus,
+            file = "./blast_OTU_summary.txt",
+            delim = "\t")
+
