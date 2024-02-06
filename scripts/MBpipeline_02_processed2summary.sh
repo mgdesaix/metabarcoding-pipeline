@@ -112,7 +112,11 @@ do
 	awk -v ID=${id} '{print ID, $1, $2}' ./03_results/03_taxon_class/${id}_sintax.tsv | sed 's/,/ /g' >> ./03_results/04_summary/sintax_summary.txt
 done
 
-
+for i in `ls ./03_results/01_cluster/*.fasta`
+do
+  id=$(echo ${i} | sed 's/_otus.fasta//')
+  cut -f1 -d";" ${i} | sed 's/>//g' | awk -v ID=${id} '{print $1,ID}' >> ./03_results/04_summary/full-sample-otus.txt
+done
 
 
 
