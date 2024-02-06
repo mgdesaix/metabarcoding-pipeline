@@ -27,6 +27,8 @@ cd metabarcoding-pipeline
 conda env create -f environment.yml
 ```
 
+*Note:* If you have an Apple M1/M2 processor, you may get a warning about `cutadapt` not being available through Conda - if so, follow the [Cutadapt installation instructions](https://cutadapt.readthedocs.io/en/stable/installation.html).
+
 ### Step 1) Process the raw data
 
 To run the first step of the pipeline some preparation of files and directories is necessary.
