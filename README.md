@@ -6,13 +6,17 @@ The goal of this pipeline is to provide users a quick, easy way to run through F
 
 2. Summarize the processed data
 
+3. Tidy the summary output
+
 For each step, the pipeline has a configuration file (\*.config.txt) the user needs to edit and is run with the Bash script (\*.sh) in the Terminal, which the user does *not* need to edit. The details of these steps can be found in the following sections. In short, running the pipeline looks like:
 
 ```sh
-# Step 1
+# Step 1: Process the raw data
 ./MBpipeline_01_raw2processed.sh MBpipeline_01_config.txt
-# Step 2
+# Step 2: Summarize the processed data
 ./MBpipeline_02_processed2summary.sh MBpipeline_02_config.txt
+# Step 3: Tidy the summary output
+Rscript blast_summary.R blast_summary.txt
 ```
 
 *Note:* If you get a warning about files not being executable, remember to use `chmod +x "filename"` to make files executable.
@@ -56,8 +60,6 @@ The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The
 
 ### Step 2) Summarize the processed data
 
-
-
 **conda** = The conda environment that has all necessary applications. If this was set up using the \*.yml file then it is "MBpipeline"
 
 **processed_file** = The final processed reads produced from Step 1. By default, these files are saved in Step 1 as "./02_processed/05_uniques/uniques-reads.txt".
@@ -70,8 +72,9 @@ The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The
 
 **sintax_db** = Database file from `-db` parameter from `vsearch`'s sintax specification.
 
-**blast_summary** = Relative path of blast_summary.R file.
+### Step 3) Tidy the summary output
 
+Run the `blast_summary.R` file from within the `./03_results/04_summary/` directory that is created by the `MBpipeline_02_processed2summary.sh` file.
 
 
 
