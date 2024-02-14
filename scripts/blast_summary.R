@@ -10,7 +10,7 @@ blast <- read_table(args[1],
                     col_names = c("Sample", "OTU", "Depth", "GenBank_ID",
                                   "Kingdom", "Phylum", "Class", "Order", "Family",
                                   "Genus", "Species", "Match"),
-                    show_col_types = F)
+                    col_types = F)
 
 
 blast_sp <- blast %>%
