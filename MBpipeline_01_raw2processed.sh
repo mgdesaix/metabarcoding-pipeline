@@ -76,9 +76,9 @@ mkdir -p ${outdir}
 echo "Running vsearch to merge"
 echo "Output to: ${outdir}/"
 for R1 in `cat ${indir}/paired-R1.txt`
-do 
+do
 	R2=${R1//R1_001_paired.fastq/R2_001_paired.fastq}
-	merged=${R1//L001_R1_001_paired.fastq/merged.fastq}
+	merged=$(echo ${R1} | sed 's/R1_001_paired.fastq/merged.fastq/' | sed 's/L001_merged/merged/')
 	echo ${merged} >> ${outdir}/merged-reads.txt
 	vsearch -fastq_mergepairs ${indir}/$R1 -reverse ${indir}/$R2 -fastqout ${outdir}/$merged \
 		-fastq_allowmergestagger >> ${outdir}/vsearch.merge.out 2>&1
