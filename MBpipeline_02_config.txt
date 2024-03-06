@@ -6,4 +6,4 @@ cluster_id=0.97
 db=./data/MIDORI2_UNIQ_NUC_GB255_srRNA_BLAST.fasta.gz
 id_similarity=0.95
 sintax_db=./data/MIDORI_UNIQ_GB254_srRNA_SINTAX.udb
-hits=1
+multiple_hits=NO
