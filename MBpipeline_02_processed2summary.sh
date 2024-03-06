@@ -76,6 +76,19 @@ do
 	echo ${blast} "DONE"
 done
 
+hits=$(awk -v FS="=" '$1 == "hits" {print $2}' ${config_file})
+if [ ${hits} -gt 1 ]
+then
+	echo "Running vsearch as previously but with -hits ${hits}"
+	for otus in `cat ./03_results/01_cluster/otus-clusters.txt`
+	do
+		blast=${otus//otus.fasta/blast.verbose.txt}
+		vsearch -usearch_global ./03_results/01_cluster/${otus} -db ${db} -id ${id_similarity} -strand both -sizein -sizeout \
+			-fasta_width 0 -top_hits_only --maxaccepts ${hits} -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters-verbose.out 2>&1
+		echo ${blast} "DONE"
+	done
+fi
+
 
 ########################################################################
 ####### Step 3: Taxonomic classification (vsearch) ###############
@@ -118,7 +131,16 @@ do
   cut -f1 -d";" ${i} | sed 's/>//g' | awk -v ID=${id} '{print $1,ID}' >> ./03_results/04_summary/full-sample-otus.txt
 done
 
+## summarize the verbose option
 
+if [ ${hits} -gt 1 ]
+then
+	for blast in `ls ./03_results/02_blast/*_blast.verbose.txt`
+	do
+		id=$(echo ${blast} | cut -f4 -d/ | sed 's/_blast.verbose.txt//')
+		awk -v ID=${id} '{print ID, $1, $2, $3, $4, $10-$9+1}' ${blast} | sed 's/;/ /g' | sed 's/size=//g' >> ./03_results/04_summary/blast_summary_verbose.txt
+	done
+fi
 
 
 
