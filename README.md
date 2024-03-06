@@ -23,6 +23,7 @@ conda activate YOUR_ENVIRONMENT_NAME
 # copy R summary script to folder for analysis
 cp blast_summary_genbank.R ./03_results/04_summary/
 # run the R summary script
+cd ./03_results/04_summary/
 Rscript blast_summary_genbank.R blast_summary.txt
 ```
 
@@ -75,24 +76,41 @@ The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The
 
 ### Step 2) Summarize the processed data
 
-**conda** = The conda environment that has all necessary applications. If this was set up using the \*.yml file then it is "MBpipeline"
+**conda** = [string] The conda environment that has all necessary applications. If this was set up using the \*.yml file then it is "MBpipeline"
 
-**processed_file** = The final processed reads produced from Step 1. By default, these files are saved in Step 1 as "./02_processed/05_uniques/uniques-reads.txt".
+**processed_file** = [string] The final processed reads produced from Step 1. By default, these files are saved in Step 1 as "./02_processed/05_uniques/uniques-reads.txt".
 
-**cluster_id** = `-id` parameter value from `vsearch` for clustering OTUs, default is set at 0.97.
+**cluster_id** = [real] `-id` parameter value from `vsearch` for clustering OTUs, default is set at 0.97.
 
-**db** = Database file specified by `-db` parameter from `vsearch`.
+**db** = [string] Database file specified by `-db` parameter from `vsearch`.
 
-**id_similarity** = `-id` parameter value from `vsearch` for blast
+**id_similarity** = [real] `-id` parameter value from `vsearch` for blast
 
-**sintax_db** = Database file from `-db` parameter from `vsearch`'s sintax specification.
+**sintax_db** = [string] Database file from `-db` parameter from `vsearch`'s sintax specification.
 
-**hits** = Number of top hits to output, corresponds to `maxaccepts` parameter from `vsearch`. Default=1. If changed to >1, then additional "verbose" blast ouput is created.
+**multiple_hits** = [logical] Providing the top hit from `vsearch`, or multiple hits. Default=NO, which does `-top_hits_only`. If changed to YES, then `-top_hits_only` is replaced by `-maxhits 0 -maxaccepts 0` which provides all database hits that pass the filters. This creates a `blast_summary_verbose.txt` file, which can be summarized with the corresponding R file.
 
 ### Step 3) Tidy the summary output
 
-Run the `blast_summary_genbank.R` file from within the `./03_results/04_summary/` directory that is created by the `MBpipeline_02_processed2summary.sh` file. This R script will only work with data from queried to a Genbank style database, and will need to be tweaked to accomodate other styles of databases.
+Run the `blast_summary_genbank.R` file from within the `./03_results/04_summary/` directory that is created by the `MBpipeline_02_processed2summary.sh` file. This R script will only work with data from queried to a Genbank style database, and will need to be tweaked to accommodate other styles of databases.
 
+```sh
+# copy R summary script to folder for analysis
+cp blast_summary_genbank.R ./03_results/04_summary/
+# run the R summary script
+cd ./03_results/04_summary/
+Rscript blast_summary_genbank.R blast_summary.txt
+```
+
+If you produced blast summary with multiple hits (`blast_summary_verbose.txt` when setting `multiple_hits=YES`), the corresponding R summarizing file, `blast_summary_genbank_verbose.R` reduces the hits to one species per sample, OTU, and match ID.
+
+```sh
+# copy R summary script to folder for analysis
+cp blast_summary_genbank_verbose.R ./03_results/04_summary/
+# run the R summary script
+cd ./03_results/04_summary/
+Rscript blast_summary_genbank_verbose.R blast_summary_verbose.txt
+```
 
 
 
