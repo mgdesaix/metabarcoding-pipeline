@@ -9,7 +9,7 @@ if (length(args)!=1) {
 blast <- read_table(args[1],
                     col_names = c("Sample", "OTU", "Depth", "GenBank_ID",
                                   "Kingdom", "Phylum", "Class", "Order", "Family",
-                                  "Genus", "Species", "Match"),
+                                  "Genus", "Species", "Match", "Query", "Target"),
                     show_col_types = F)
 
 
@@ -19,9 +19,11 @@ blast_sp <- blast %>%
   summarize(Depth_sum = sum(Depth),
             # N_OTUs = n(),
             .groups = "drop") %>%
-  # filter(Depth > 5) %>%
-  arrange(Sample, desc(Depth_sum)) %>%
-  pivot_wider(names_from = Sample, values_from = Depth_sum)
+  pivot_wider(names_from = Sample, values_from = Depth_sum) %>%
+  ungroup() %>%
+  mutate(Sum = rowSums(across(where(is.numeric)), na.rm = TRUE)) %>%
+  arrange(desc(Sum))
+
 write_delim(x = blast_sp,
           file = "blast_species_contingency_table.txt",
            delim="\t")

@@ -107,7 +107,7 @@ mkdir -p ${outdir}
 for blast in `ls ./03_results/02_blast/*_blast.txt`
 do
 	id=$(echo ${blast} | cut -f4 -d/ | sed 's/_blast.txt//')
-	awk -v ID=${id} '{print ID, $1, $2, $3}' ${blast} | sed 's/;/ /g' | sed 's/size=//g' >> ./03_results/04_summary/blast_summary.txt
+	awk -v ID=${id} '{print ID, $1, $2, $3, $4, $10-$9+1}' ${blast} | sed 's/;/ /g' | sed 's/size=//g' >> ./03_results/04_summary/blast_summary.txt
 
 	awk -v ID=${id} '{print ID, $1, $2}' ./03_results/03_taxon_class/${id}_sintax.tsv | sed 's/,/ /g' >> ./03_results/04_summary/sintax_summary.txt
 done
