@@ -87,6 +87,8 @@ The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The
 
 **sintax_db** = Database file from `-db` parameter from `vsearch`'s sintax specification.
 
+**hits** = Number of top hits to output, corresponds to `maxaccepts` parameter from `vsearch`. Default=1. If changed to >1, then additional "verbose" blast ouput is created.
+
 ### Step 3) Tidy the summary output
 
 Run the `blast_summary_genbank.R` file from within the `./03_results/04_summary/` directory that is created by the `MBpipeline_02_processed2summary.sh` file. This R script will only work with data from queried to a Genbank style database, and will need to be tweaked to accomodate other styles of databases.
