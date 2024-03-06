@@ -84,7 +84,7 @@ then
 	do
 		blast=${otus//otus.fasta/blast.verbose.txt}
 		vsearch -usearch_global ./03_results/01_cluster/${otus} -db ${db} -id ${id_similarity} -strand both -sizein -sizeout \
-			-fasta_width 0 -maxhits 0 -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters-verbose.out 2>&1
+			-fasta_width 0 -maxhits 0 -maxaccepts 0 -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters-verbose.out 2>&1
 		echo ${blast} "DONE"
 	done
 fi
