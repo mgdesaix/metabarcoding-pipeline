@@ -66,7 +66,7 @@ db=$(awk -v FS="=" '$1 == "db" {print $2}' ${config_file})
 id_similarity=$(awk -v FS="=" '$1 == "id_similarity" {print $2}' ${config_file})
 query_cov=$(awk -v FS="=" '$1 == "query_cov" {print $2}' ${config_file})
 
-echo "Running vsearch -usearch_global with -d ${id_similarity} -db ${db}"
+echo "Running vsearch -usearch_global with -id ${id_similarity} -query_cov ${query_cov} -db ${db}"
 echo "Output to: ${outdir}/"
 for otus in `cat ${indir}/otus-clusters.txt`
 do
