@@ -64,6 +64,7 @@ mkdir -p ${outdir}
 
 db=$(awk -v FS="=" '$1 == "db" {print $2}' ${config_file})
 id_similarity=$(awk -v FS="=" '$1 == "id_similarity" {print $2}' ${config_file})
+query_cov=$(awk -v FS="=" '$1 == "query_cov" {print $2}' ${config_file})
 
 echo "Running vsearch -usearch_global with -d ${id_similarity} -db ${db}"
 echo "Output to: ${outdir}/"
@@ -72,7 +73,7 @@ do
 	blast=${otus//otus.fasta/blast.txt}
 	echo ${blast} >> ${outdir}/blast-samples.txt
 	vsearch -usearch_global ${indir}/${otus} -db ${db} -id ${id_similarity} -strand both -sizein -sizeout \
-		-fasta_width 0 -top_hits_only -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters.out 2>&1
+		-fasta_width 0 -query_cov ${query_cov} -top_hits_only -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters.out 2>&1
 	echo ${blast} "DONE"
 done
 
@@ -84,7 +85,7 @@ then
 	do
 		blast=${otus//otus.fasta/blast.verbose.txt}
 		vsearch -usearch_global ./03_results/01_cluster/${otus} -db ${db} -id ${id_similarity} -strand both -sizein -sizeout \
-			-fasta_width 0 -maxhits 0 -maxaccepts 0 -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters-verbose.out 2>&1
+			-fasta_width 0 -query_cov ${query_cov} -maxhits 0 -maxaccepts 0 -blast6out ${outdir}/${blast} >> ${outdir}/blast-clusters-verbose.out 2>&1
 		echo ${blast} "DONE"
 	done
 fi
