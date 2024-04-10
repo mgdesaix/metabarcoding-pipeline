@@ -6,6 +6,9 @@ if (length(args)!=1) {
   stop("Need to provide one parameter - blast_summary.txt or equivalent! (input file).n", call.=FALSE)
 }
 
+outdir <- "./blast_summary_genbank/"
+dir.create(outdir)
+
 blast <- read_table(args[1],
                     col_names = c("Sample", "OTU", "Depth", "GenBank_ID",
                                   "Kingdom", "Phylum", "Class", "Order", "Family",
@@ -25,16 +28,16 @@ blast_sp <- blast %>%
   arrange(desc(Sum))
 
 write_delim(x = blast_sp,
-          file = "blast_species_contingency_table.txt",
-           delim="\t")
+            file = paste0(outdir, "blast_species_contingency_table.txt"),
+            delim="\t")
 
 blast_sample_depth <- blast %>%
   group_by(Sample) %>%
   summarize(Depth = sum(Depth),
             .groups = "drop")
 write_delim(x = blast_sample_depth,
-          file = "blast_sample_depth.txt",
-           delim="\t")
+            file = paste0(outdir, "blast_sample_depth.txt"),
+            delim="\t")
 
 
 otus <- read_table("./full-sample-otus.txt",
@@ -55,6 +58,18 @@ blast_otus <- blast %>%
   left_join(otus_wide, by = c("Sample", "OTU"))
 
 write_delim(x = blast_otus,
-            file = "./blast_OTU_summary.txt",
+            file = paste0(outdir, "blast_OTU_summary.txt"),
             delim = "\t")
+
+p.otu.histogram <- blast_otus %>%
+  ggplot() +
+  geom_histogram(aes(x = Query),
+                 bins = 50) +
+  xlab("Sequence Length") +
+  ggtitle("Histogram of OTU sequence lengths") +
+  ylab("Count") +
+  theme_bw()
+
+ggsave(plot = p.otu.histogram,
+       filename = paste0(outdir, "OTU_histogram.png"))
 
