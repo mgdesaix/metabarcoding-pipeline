@@ -82,6 +82,8 @@ The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The
 
 **cluster_id** = [real] `-id` parameter value from `vsearch` for clustering OTUs, default is set at 0.97.
 
+**query_cov** = [real] `-query_cov` parameter value from `vsearch` for filtering matches by query coverage, default is set at 0.6 (i.e. matches with query coverage beneath 60% are dropped)
+
 **db** = [string] Database file specified by `-db` parameter from `vsearch`.
 
 **id_similarity** = [real] `-id` parameter value from `vsearch` for blast
