@@ -3,7 +3,7 @@
 conda=MBpipeline
 processed_file=./02_processed/05_uniques/uniques-reads.txt
 cluster_id=0.97
-db=./data/MIDORI2_UNIQ_NUC_GB255_srRNA_BLAST.fasta.gz
+db=./data/MIDORI2_UNIQ_NUC_GB255_srRNA_BLAST.fasta
 id_similarity=0.95
 query_cov=0.6
 sintax_db=./data/MIDORI_UNIQ_GB254_srRNA_SINTAX.udb
