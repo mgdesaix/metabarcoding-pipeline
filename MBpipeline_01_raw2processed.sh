@@ -58,7 +58,7 @@ do
 	R2unpaired=${R2//.fastq/_unpaired.fastq}
 	trimmomatic PE -threads 32 -phred33 ${indir}/$R1 ${indir}/$R2 ${outdir}/$R1paired \
 		${outdir}/$R1unpaired ${outdir}/$R2paired ${outdir}/$R2unpaired \
-		ILLUMINACLIP:${illumina_clip}:2:30:10 CROP:250 SLIDINGWINDOW:4:15 MINLEN:75 >> ${outdir}/trimmomatic.out 2>&1
+		ILLUMINACLIP:${illumina_clip}:2:30:10 CROP:${CROP} SLIDINGWINDOW:${SLIDINGWINDOW} MINLEN:${MINLEN} >> ${outdir}/trimmomatic.out 2>&1
 	echo ${R1paired} "DONE"
 done
 
