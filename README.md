@@ -47,7 +47,13 @@ cd metabarcoding-pipeline
 conda env create -f environment.yml
 ```
 
-*Note:* If you have an Apple M1/M2 processor, you may get a warning about `cutadapt` not being available through Conda - if so, follow the [Cutadapt installation instructions](https://cutadapt.readthedocs.io/en/stable/installation.html).
+*Note:* If you have an Apple M1/M2 processor, you will need to install the conda environment with the following commands because many of the softwares we need don't have the ARM architecture compatibility.
+
+```sh
+CONDA_SUBDIR=osx-64 conda env create -f environment.yml
+conda activate MBpipeline
+conda config --env --set subdir osx-64
+```
 
 ### Step 1) Process the raw data
 
