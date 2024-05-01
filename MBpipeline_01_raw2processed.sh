@@ -65,63 +65,73 @@ done
 paste ${outdir}/paired-R1.txt <(grep "Input Read Pairs" ${outdir}/trimmomatic.out) \
 	| awk '{print "Step1", $0}' > ${outdir}/trimmomatic.summary.txt
 
-
 ##################################################
-####### Step 2: Merging reads (vsearch) ###################
+####### Step 2 (previously 3): Cut primers (cutadapt) ###################
 
 indir=${outdir}
-outdir=./02_processed/02_merged
+outdir=./02_processed/02_cutadapt
+mkdir -p ${outdir}
+
+trim_bases=$(awk -v FS="=" '$1 == "trim_bases" {print $2}' ${config_file})
+R1_primer=$(awk -v FS="=" '$1 == "R1_primer" {print $2}' ${config_file})
+R2_primer=$(awk -v FS="=" '$1 == "R2_primer" {print $2}' ${config_file})
+
+echo "Running cutadapt to cut primers: ${R1_primer} ${R2_primer}"
+echo "Output to: ${outdir}/"
+# for merged in `cat ${indir}/merged-reads.txt`
+for R1 in `cat ${indir}/paired-R1.txt`
+do
+	R2=${R1//R1_001_paired.fastq/R2_001_paired.fastq}
+	R1_stripped=$(echo ${R1} | sed 's/R1_001_paired.fastq/R1_stripped.fastq/' | sed 's/L001_R1_stripped/R1_stripped/')
+	R2_stripped=$(echo ${R1_stripped} | sed 's/R1_stripped.fastq/R2_stripped.fastq/')
+	
+	echo ${R1_stripped} >> ${outdir}/stripped-reads.txt
+	cutadapt -g ^${R1_primer} -G ^${R2_primer} -o ${outdir}/${R1_stripped} -p ${outdir}/${R2_stripped} \
+	  -u ${trim_bases} -U ${trim_bases} --discard-untrimmed ${indir}/${R1} ${indir}/${R2} >> ${outdir}/cutadapt.out 2>&1
+
+	echo ${R1_stripped} "DONE"
+done
+
+sed -n -e 's/^.*\(Read 1 with adapter: \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.reads1_adapters.column.txt
+sed -n -e 's/^.*\(Read 2 with adapter: \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.reads2_adapters.column.txt
+sed -n -e 's/^.*\(Pairs written \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.pairs_written.column.txt
+sed -n -e 's/^.*\(Total written \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.total_written.column.txt
+
+paste ${outdir}/stripped-reads.txt ${outdir}/cutadapt.reads1_adapters.column.txt ${outdir}/cutadapt.reads2_adapters.column.txt \
+	${outdir}/cutadapt.pairs_written.column.txt ${outdir}/cutadapt.total_written.column.txt | \
+	awk '{print "Step2", $0}' > ${outdir}/cutadapt.summary.txt
+rm ${outdir}/*.column.txt
+
+
+##################################################
+####### Step 3 (previously 2): Merging reads (vsearch) ###################
+
+indir=${outdir}
+outdir=./02_processed/03_merged
 mkdir -p ${outdir}
 
 echo "Running vsearch to merge"
 echo "Output to: ${outdir}/"
-for R1 in `cat ${indir}/paired-R1.txt`
+for R1_stripped in `cat ${indir}/stripped-reads.txt`
 do
-	R2=${R1//R1_001_paired.fastq/R2_001_paired.fastq}
-	merged=$(echo ${R1} | sed 's/R1_001_paired.fastq/merged.fastq/' | sed 's/L001_merged/merged/')
-	echo ${merged} >> ${outdir}/merged-reads.txt
-	vsearch -fastq_mergepairs ${indir}/$R1 -reverse ${indir}/$R2 -fastqout ${outdir}/$merged \
+	R2_stripped=$(echo ${R1_stripped} | sed 's/R1_stripped.fastq/R2_stripped.fastq/')
+	merged=$(echo ${R1_stripped} | sed 's/R1_stripped.fastq/merged.fastq/')
+	vsearch -fastq_mergepairs ${indir}/${R1_stripped} -reverse ${indir}/${R2_stripped} -fastqout ${outdir}/${merged} \
 		-fastq_allowmergestagger >> ${outdir}/vsearch.merge.out 2>&1
-	echo ${merged} "DONE"
+	fastq=$(echo ${merged} | sed 's/.fastq.gz/.fastq/')
+	mv ${outdir}/${merged} ${outdir}/${fastq}
+	gzip ${outdir}/${fastq}
+	echo ${fastq}.gz >> ${outdir}/merged-reads.txt
+	echo ${fastq}.gz "DONE"
 done
 
 grep -A 3 "Merging reads" ${outdir}/vsearch.merge.out | grep "Pairs" > ${outdir}/pairs.column.txt
 grep -A 3 "Merging reads" ${outdir}/vsearch.merge.out | grep "Merged" > ${outdir}/merged.column.txt
 grep -A 3 "Merging reads" ${outdir}/vsearch.merge.out | grep "Not merged" > ${outdir}/not-merged.column.txt
 paste ${outdir}/merged-reads.txt ${outdir}/pairs.column.txt ${outdir}/merged.column.txt ${outdir}/not-merged.column.txt \
-	| awk '{print "Step2", $0}' > ${outdir}/vsearch.merge.summary.txt
+	| awk '{print "Step3", $0}' > ${outdir}/vsearch.merge.summary.txt
 rm ${outdir}/*.column.txt
 
-
-##################################################
-####### Step 3: Cut adapters (cutadapt) ###################
-
-indir=${outdir}
-outdir=./02_processed/03_cutadapt
-mkdir -p ${outdir}
-
-a=$(awk -v FS="=" '$1 == "a" {print $2}' ${config_file})
-g=$(awk -v FS="=" '$1 == "g" {print $2}' ${config_file})
-linked=$(awk -v FS="=" '$1 == "linked" {print $2}' ${config_file})
-
-echo "Running cutadapt to cut adapters: ${linked}"
-echo "Output to: ${outdir}/"
-for merged in `cat ${indir}/merged-reads.txt`
-do
-	stripped=${merged//merged.fastq/stripped.fastq}
-	echo ${stripped} >> ${outdir}/stripped-reads.txt
-	# cutadapt ${a} ${g} -o ${outdir}/${stripped} --discard-untrimmed ${indir}/${merged} -u 6 >> ${outdir}/cutadapt.out 2>&1
-	cutadapt ${linked} -o ${outdir}/${stripped} --discard-untrimmed ${indir}/${merged} -u 6 >> ${outdir}/cutadapt.out 2>&1
-	echo ${stripped} "DONE"
-done
-
-sed -n -e 's/^.*\(Reads with adapters: \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.reads_adapters.column.txt
-sed -n -e 's/^.*\(Reads written \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.reads_written.column.txt
-sed -n -e 's/^.*\(Total written \).*  /\1/p' ${outdir}/cutadapt.out > ${outdir}/cutadapt.total_written.column.txt
-
-paste ${outdir}/stripped-reads.txt ${outdir}/cutadapt.reads_adapters.column.txt ${outdir}/cutadapt.reads_written.column.txt \
-	${outdir}/cutadapt.total_written.column.txt | awk '{print "Step3", $0}' > ${outdir}/cutadapt.summary.txt
-rm ${outdir}/*.column.txt
 
 ##################################################
 ####### Step 4: Filter errors (vsearch) ###################
@@ -132,13 +142,16 @@ mkdir -p ${outdir}
 
 echo "Running vsearch to filter errors"
 echo "Output to: ${outdir}/"
-for stripped in `cat ${indir}/stripped-reads.txt`
+for merged in `cat ${indir}/merged-reads.txt`
 do
-	filtered=${stripped//stripped.fastq/filtered.fasta}
-	echo ${filtered} >> ${outdir}/filtered-reads.txt
-	vsearch -fastq_filter ${indir}/${stripped} -fastq_maxee 1.0 -relabel Filt -fastaout ${outdir}/${filtered} \
+	filtered=${merged//merged.fastq/filtered.fasta}
+	vsearch -fastq_filter ${indir}/${merged} -fastq_maxee 1.0 -relabel Filt -fastaout ${outdir}/${filtered} \
 		>> ${outdir}/filter.out 2>&1
-	echo ${filtered} "DONE"
+	fastq=$(echo ${filtered} | sed 's/.fasta.gz/.fasta/')
+	mv ${outdir}/${filtered} ${outdir}/${fastq}
+	gzip ${outdir}/${fastq}
+	echo ${fastq}.gz >> ${outdir}/filtered-reads.txt
+	echo ${fastq}.gz "DONE"
 done
 
 paste ${outdir}/filtered-reads.txt <(grep "sequences kept" ${outdir}/filter.out) \
@@ -156,10 +169,13 @@ echo "Output to: ${outdir}/"
 for filtered in `cat ${indir}/filtered-reads.txt`
 do
 	uniques=${filtered//filtered.fasta/uniques.fasta}
-	echo ${uniques} >> ${outdir}/uniques-reads.txt
 	vsearch -derep_fulllength ${indir}/${filtered} -sizeout -relabel Uniq \
 		-output ${outdir}/${uniques} >> ${outdir}/uniques.out 2>&1
-	echo ${uniques} "DONE"
+	fastq=$(echo ${uniques} | sed 's/.fasta.gz/.fasta/')
+	mv ${outdir}/${uniques} ${outdir}/${fastq}
+	gzip ${outdir}/${fastq}
+	echo ${fastq}.gz >> ${outdir}/uniques-reads.txt
+	echo ${fastq}.gz "DONE"
 done
 
 paste ${outdir}/uniques-reads.txt <(grep "unique sequences" ${outdir}/uniques.out) \

@@ -47,7 +47,8 @@ echo "Running vsearch -cluster_unoise with -id ${cluster_id}"
 echo "Output to: ${outdir}/"
 for uniques in `cat ${processed_file}`
 do
-	otus=${uniques//uniques.fasta/otus.fasta}
+	# otus=${uniques//uniques.fasta/otus.fasta}
+	otus=$(echo ${uniques} | sed 's/uniques.fasta/otus.fasta/' | sed 's/.gz//')
 	echo ${otus} >> ${outdir}/otus-clusters.txt
 	vsearch -cluster_unoise ${indir}/${uniques} -id ${cluster_id} -minsize 2 -unoise_alpha 2 -sizein \
 		-sizeout -fasta_width 0 -centroids ${outdir}/${otus} -relabel Otu >> ${outdir}/otus-clusters.out 2>&1

@@ -27,13 +27,15 @@ cd ./03_results/04_summary/
 Rscript blast_summary_genbank.R blast_summary.txt
 ```
 
-The output from the `blast_summary_genbank.R` file are:
+The output from the `blast_summary_genbank.R` are placed in a folder `blast_summary_genbank` and are the following:
 
 - Contingency table (`blast_species_contingency_table.txt`): Summary of number of reads for species (rows) vs. samples (columns)
 
 - Sample depth summary (`blast_sample_depth.txt`): Summary of total reads per sample
 
 - OTU sequence information (`blast_OTU_summary.txt`): Summary of each OTU delineated per sample and it's corresponding identity match to target, length, coverage of target, and actual sequence.
+
+- OTU histogram plot (`OTU_histogram.png`)
 
 *Note:* If you get a warning about files not being executable, remember to use `chmod +x "filename"` to make files executable.
 
@@ -61,7 +63,7 @@ To run the first step of the pipeline some preparation of files and directories 
 
 First, the raw \*.fastq files **must be in a directory called "01_raw"** AND that directory needs to be in the same directory as the metabarcoding-pipeline scripts.
 
-The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The configuration file is set up such that there is a multi-line header delineated by rows beginning with "#", followed by rows providing different parameters. Each parameter is on its own row and the name to the left of the "=" is *not to be edited* while the value to the right of the "=" is what should be edited. The definitions of the parameters for this step are provided below:
+The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The configuration file is set up such that there is a multi-line header delineated by rows beginning with "#", followed by rows providing different parameters. Each parameter is on its own row and the name to the left of the "=" is *not to be edited* while the value to the right of the "=" is what should be edited. *NO SPACES AFTER THE '='!!* The definitions of the parameters for this step are provided below:
 
 **conda** = The conda environment that has all necessary applications. If this was set up using the \*.yml file then it is "MBpipeline"
 
@@ -75,9 +77,11 @@ The configuration file (`MBpipeline_01_config.txt`) also needs to be edited. The
 
 **MINLEN** = The `MINLEN:` parameter from `trimmomatic`.
 
-**a** = The `a` parameter from `cutadapt`.
+**R1_primer** = The primer sequence of read 1, which is used with the `-g` option of `cutadapt` (at front of sequence) and is anchored with '^'.
 
-**g** = The `g` parameter from `cutadapt`.
+**R2_primer** = The primer sequence of read 2, which is used with the `-G` option of `cutadapt` (at front of sequence) and is anchored with '^'.
+
+**trim_bases** = The `-u` (read 1) or `-U` (read 2) parameter from `cutadapt` to cut a set number of bases at the front of the sequence prior to removing the primers. In our data we had 6 "filler" bases that always preceded the primer sequences.
 
 
 ### Step 2) Summarize the processed data
