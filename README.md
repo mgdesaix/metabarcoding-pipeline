@@ -114,6 +114,16 @@ cd ./03_results/04_summary/
 Rscript blast_summary_genbank.R blast_summary.txt
 ```
 
+The above code creates a directory `./blast_summary/genbank` with the following files:
+
+**blast_OTU_summary.txt** = A summary of the read depths for each OTU per sample and the associated taxonomic hit on the the OTU. Note that the OTU ids created by `vsearch` in the current workflow are not standardized across samples. I have added a column (`OTU_unique`) to this workflow that provides an OTU that is unique to the sequence and standardized across samples. The `OTU_fasta` column provides the original OTU designation that is specific to each sample and is relevant if you need to go back through the fasta files produced by `vsearch`.
+
+**blast_sample_depth.txt** = A per-sample summary of the total number of reads (i.e., depth) analzed
+
+**blast_species_contingency_table.txt** = A contingency table where rows are the taxonomic units identified and columns are the individual samples. Values in the table provide the total number of reads per sample associated with the given taxonomic unit.
+
+**OTU_histogram.png** = A figure of the histogram of OTU sequence length we found to be useful for seeing the expected range of sequence length and identifying spurious outliers.
+
 If you produced blast summary with multiple hits (`blast_summary_verbose.txt` when setting `multiple_hits=YES`), the corresponding R summarizing file, `blast_summary_genbank_verbose.R` reduces the hits to one species per sample, OTU, and match ID.
 
 ```sh
