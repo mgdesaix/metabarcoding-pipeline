@@ -10,7 +10,7 @@ outdir <- "./blast_summary_genbank/"
 dir.create(outdir)
 
 blast <- read_table(args[1],
-                    col_names = c("Sample", "OTU", "Depth", "GenBank_ID",
+                    col_names = c("Sample", "OTU_fasta", "Depth", "GenBank_ID",
                                   "Kingdom", "Phylum", "Class", "Order", "Family",
                                   "Genus", "Species", "Match", "Query", "Target"),
                     show_col_types = F)
@@ -47,7 +47,7 @@ otus <- read_table("./full-sample-otus.txt",
 otus_wide <- cbind((otus %>%
                       filter(Name == "OTU") %>%
                       select(Sample, Data) %>%
-                      rename("OTU" = "Data")),
+                      rename("OTU_fasta" = "Data")),
                    (otus %>%
                       filter(Name == "Sequence") %>%
                       select(Data) %>%
@@ -55,9 +55,18 @@ otus_wide <- cbind((otus %>%
   tibble()
 
 blast_otus <- blast %>%
-  left_join(otus_wide, by = c("Sample", "OTU"))
+  left_join(otus_wide, by = c("Sample", "OTU_fasta"))
 
-write_delim(x = blast_otus,
+sequence.df <- tibble("Sequence" = unique(otus_wide$Sequence)) %>%
+  rowid_to_column() %>%
+  mutate("OTU_unique" = paste0("Otu", rowid)) %>%
+  select(-c(rowid))
+
+blast_otus_new <- blast_otus %>%
+  left_join(sequence.df, by = "Sequence") %>%
+  select(c(Sample, OTU_fasta, OTU_unique, Depth:Sequence))
+
+write_delim(x = blast_otus_new,
             file = paste0(outdir, "blast_OTU_summary.txt"),
             delim = "\t")
 
